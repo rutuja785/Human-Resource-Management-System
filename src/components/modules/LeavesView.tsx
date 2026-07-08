@@ -36,8 +36,10 @@ export default function LeavesView({
   // New leave request form states
   const [employeeId, setEmployeeId] = useState('');
   const [leaveType, setLeaveType] = useState('Casual Leave');
-  const [startDate, setStartDate] = useState('2026-07-06');
-  const [endDate, setEndDate] = useState('2026-07-07');
+  const todayStr = new Date().toISOString().split('T')[0];
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  const [startDate, setStartDate] = useState(todayStr);
+  const [endDate, setEndDate] = useState(tomorrowStr);
   const [reason, setReason] = useState('');
 
   const filteredRequests = leaveRequests.filter(req => {

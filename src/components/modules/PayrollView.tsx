@@ -21,7 +21,8 @@ interface PayrollViewProps {
 export default function PayrollView({ employees }: PayrollViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPayslipEmp, setSelectedPayslipEmp] = useState<Employee | null>(null);
-  const [payslipMonth, setPayslipMonth] = useState('June 2026');
+  const currentMonthLabel = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const [payslipMonth, setPayslipMonth] = useState(currentMonthLabel);
 
   const filteredEmployees = employees.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -56,9 +57,12 @@ export default function PayrollView({ employees }: PayrollViewProps) {
             onChange={e => setPayslipMonth(e.target.value)}
             className="bg-transparent text-xs font-bold text-slate-900 dark:text-white outline-none border-none"
           >
-            <option value="June 2026">June 2026</option>
-            <option value="May 2026">May 2026</option>
-            <option value="April 2026">April 2026</option>
+            {[0, 1, 2].map(offset => {
+              const d = new Date();
+              d.setMonth(d.getMonth() - offset);
+              const label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+              return <option key={label} value={label}>{label}</option>;
+            })}
           </select>
         </div>
       </div>
@@ -184,9 +188,9 @@ export default function PayrollView({ employees }: PayrollViewProps) {
                     <div className="w-6 h-6 rounded bg-purple-600 flex items-center justify-center">
                       <span className="text-white font-bold text-xs">D</span>
                     </div>
-                    <span className="font-extrabold tracking-tight text-slate-900 text-sm">Daydrift Inc.</span>
+                    <span className="font-extrabold tracking-tight text-slate-900 text-sm">HR Studio Inc.</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 mt-1 block max-w-xs">100 Pine Street, San Francisco, CA 94111, USA</span>
+                  <span className="text-[10px] text-slate-400 mt-1 block max-w-xs">123 Business Ave, San Francisco, CA 94111, USA</span>
                 </div>
                 <div className="text-right">
                   <h3 className="text-lg font-black tracking-tight text-slate-900">PAYSLIP</h3>

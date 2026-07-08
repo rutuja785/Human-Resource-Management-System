@@ -71,7 +71,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('daydrift-theme');
+      const saved = localStorage.getItem('hrstudio-theme');
       return (saved === 'dark' || saved === 'light') ? saved : 'light';
     }
     return 'light';
@@ -84,25 +84,26 @@ export default function App() {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('daydrift-theme', theme);
+    localStorage.setItem('hrstudio-theme', theme);
   }, [theme]);
 
   // Shared application states
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
 
-  // Dynamically derive currentUser from the employee directory (EMP-101 is Sarah Jenkins)
-  const currentUser = employees.find(e => e.id === 'EMP-101') || {
-    id: 'EMP-101',
-    name: 'Sarah Jenkins',
-    email: 'sjenkins@daydrift.co',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-    role: 'VP of Engineering',
+  // Dynamically derive currentUser from the employee directory. Falls back to a
+  // generic placeholder profile until at least one employee has been added.
+  const currentUser = employees[0] || {
+    id: 'GUEST',
+    name: 'Guest User',
+    email: '',
+    avatar: '',
+    role: 'No Employees Yet',
     status: 'Active' as const,
-    department: 'Engineering',
-    contact: '+1 (555) 019-2834',
-    hireDate: '2022-04-12',
-    salary: { basic: 8500, hra: 3400, allowances: 2100, deductions: 1200 }
+    department: '-',
+    contact: '',
+    hireDate: new Date().toISOString().split('T')[0],
+    salary: { basic: 0, hra: 0, allowances: 0, deductions: 0 }
   };
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(initialLeaveRequests);
   const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>(initialAttendanceLogs);
@@ -113,22 +114,18 @@ export default function App() {
   const [appraisals, setAppraisals] = useState<Appraisal[]>(initialAppraisals);
   const [notifications, setNotifications] = useState<HRNotification[]>(initialNotifications);
   
-  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([
-    {
-      id: 'EML-001',
-      employeeId: 'EMP-103',
-      employeeName: 'Alisha Patel',
-      recipientEmail: 'apatel@daydrift.co',
-      campaignType: 'Payslip',
-      subject: 'Payslip Released: June 2026',
-      body: 'Hi Alisha, Your payslip for June 2026 has been successfully generated...',
-      status: 'Sent',
-      timestamp: '2026-07-04 10:00'
-    }
-  ]);
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
 
   const [globalSearch, setGlobalSearch] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // Live header clock — updates every minute, formatted as UTC.
+  const formatUtcNow = () => new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  const [currentDateTime, setCurrentDateTime] = useState(formatUtcNow());
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentDateTime(formatUtcNow()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Leave Handlers
   const handleApproveLeave = (id: string) => {
@@ -380,7 +377,7 @@ export default function App() {
               </motion.div>
               {!sidebarCollapsed && (
                 <>
-                  <span className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Daydrift</span>
+                  <span className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">HR Studio</span>
                   <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-mono bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 px-1.5 py-0.5 rounded">v2.1</span>
                 </>
               )}
@@ -589,7 +586,7 @@ export default function App() {
             
             {/* Live UTC Clock & Date widget */}
             <div className="text-right hidden sm:block">
-              <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500">2026-07-05 UTC</span>
+              <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500">{currentDateTime}</span>
               <span className="text-[9px] text-indigo-600 dark:text-indigo-400 block font-bold tracking-wider">SECURE LINK</span>
             </div>
           </div>

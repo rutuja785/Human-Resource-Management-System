@@ -45,7 +45,7 @@ export default function EmployeesView({
   const [role, setRole] = useState('');
   const [department, setDepartment] = useState('Engineering');
   const [contact, setContact] = useState('');
-  const [hireDate, setHireDate] = useState('2026-07-05');
+  const [hireDate, setHireDate] = useState(new Date().toISOString().split('T')[0]);
   const [avatar, setAvatar] = useState('');
   const [basic, setBasic] = useState(5000);
   const [hra, setHra] = useState(2000);
@@ -70,7 +70,7 @@ export default function EmployeesView({
     setRole('');
     setDepartment('Engineering');
     setContact('');
-    setHireDate('2026-07-05');
+    setHireDate(new Date().toISOString().split('T')[0]);
     setAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face');
     setBasic(5000);
     setHra(2000);
@@ -256,8 +256,8 @@ export default function EmployeesView({
                   {[
                     { milestone: "Signed Employment Contract", done: true },
                     { milestone: "Provision Company Laptop & Gear", done: true },
-                    { milestone: "HR Welcome Onboarding Sync", done: selectedEmp.id !== 'EMP-105' && selectedEmp.id !== 'EMP-106' },
-                    { milestone: "Generate RFID Identity Card", done: selectedEmp.id !== 'EMP-106' }
+                    { milestone: "HR Welcome Onboarding Sync", done: true },
+                    { milestone: "Generate RFID Identity Card", done: true }
                   ].map((m, idx) => (
                     <div key={idx} className="flex items-center justify-between text-xs">
                       <span className="text-slate-600 dark:text-slate-300">{m.milestone}</span>
@@ -403,7 +403,7 @@ export default function EmployeesView({
                     value={email} 
                     onChange={e => setEmail(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs rounded-lg p-2.5 text-slate-900 dark:text-white outline-none focus:border-purple-500"
-                    placeholder="jdoe@daydrift.co"
+                    placeholder="jdoe@hrstudio.com"
                   />
                 </div>
               </div>

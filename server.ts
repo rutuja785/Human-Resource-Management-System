@@ -71,20 +71,20 @@ async function getEtherealTransporter() {
 // Gorgeous responsive HTML Email layout builder
 function generateEmailHtml(campaignType: string, employeeName: string, subject: string, body: string): string {
   let headerColor = "#8b5cf6"; // Purple-500
-  let bannerText = "Daydrift HR Operations & Internal Communications";
+  let bannerText = "HR Studio Operations & Internal Communications";
   let titleText = "HR Notification";
   let accentBlock = "";
 
   if (campaignType === "Birthday") {
     headerColor = "#ec4899"; // Pink-500
     titleText = "Happy Birthday! 🎂";
-    bannerText = "Daydrift Celebrates You";
+    bannerText = "HR Studio Celebrates You";
     accentBlock = `
       <div style="margin-top: 20px; padding: 15px; background-color: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 12px; display: flex; align-items: center;">
         <div style="font-size: 24px; margin-right: 12px;">🎁</div>
         <div>
           <p style="margin: 0; font-size: 13px; font-weight: bold; color: #9d174d;">Birthday Perk Activated!</p>
-          <p style="margin: 3px 0 0 0; font-size: 11px; color: #be185d;">Enjoy a complimentary Starbucks voucher on Daydrift.</p>
+          <p style="margin: 3px 0 0 0; font-size: 11px; color: #be185d;">Enjoy a complimentary Starbucks voucher on HR Studio.</p>
           <span style="display: inline-block; margin-top: 6px; padding: 3px 8px; font-family: monospace; font-size: 11px; font-weight: bold; color: #9d174d; background-color: #fce7f3; border-radius: 4px; text-transform: uppercase;">Code: BDAY-2026-${employeeName.substring(0, 3).toUpperCase()}</span>
         </div>
       </div>
@@ -92,7 +92,7 @@ function generateEmailHtml(campaignType: string, employeeName: string, subject: 
   } else if (campaignType === "Work Anniversary") {
     headerColor = "#6366f1"; // Indigo-500
     titleText = "Milestone Moment! 🌟";
-    bannerText = "Daydrift Career Milestone";
+    bannerText = "HR Studio Career Milestone";
     accentBlock = `
       <div style="margin-top: 20px; padding: 15px; background-color: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 12px; display: flex; align-items: center;">
         <div style="font-size: 24px; margin-right: 12px;">🌟</div>
@@ -105,7 +105,7 @@ function generateEmailHtml(campaignType: string, employeeName: string, subject: 
   } else if (campaignType === "Payslip") {
     headerColor = "#059669"; // Emerald-600
     titleText = "Salary Slip Dispatched 📑";
-    bannerText = "Daydrift Secure Payroll";
+    bannerText = "HR Studio Secure Payroll";
     accentBlock = `
       <div style="margin-top: 20px; padding: 15px; background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; font-family: monospace; font-size: 12px;">
         <div style="font-weight: bold; padding-bottom: 6px; border-bottom: 1px dashed #d1fae5; color: #065f46; display: flex; justify-content: space-between;">
@@ -116,13 +116,13 @@ function generateEmailHtml(campaignType: string, employeeName: string, subject: 
           <span>Basic Salary & Allowances:</span>
           <strong>Fully Dispatched</strong>
         </div>
-        <p style="margin: 8px 0 0 0; font-size: 11px; color: #065f46; font-style: italic;">Detailed payslip calculations have been successfully credited. Check your Daydrift Portal to view/download PDF.</p>
+        <p style="margin: 8px 0 0 0; font-size: 11px; color: #065f46; font-style: italic;">Detailed payslip calculations have been successfully credited. Check your HR Studio Portal to view/download PDF.</p>
       </div>
     `;
   } else {
     headerColor = "#475569"; // Slate-600
     titleText = subject || "Team Announcement";
-    bannerText = "Daydrift Team Memorandum";
+    bannerText = "HR Studio Team Memorandum";
   }
 
   return `
@@ -164,9 +164,9 @@ function generateEmailHtml(campaignType: string, employeeName: string, subject: 
                 <!-- Footer -->
                 <tr>
                   <td style="background-color: #f8fafc; border-top: 1px solid #f1f5f9; padding: 16px 24px; text-align: center; font-size: 10px; color: #64748b;">
-                    <p style="margin: 0; font-weight: bold; color: #475569;">Daydrift HR Operations & Internal Communications</p>
-                    <p style="margin: 4px 0 0 0;">This is an automated operational email sent on behalf of Daydrift Corp.</p>
-                    <p style="margin: 2px 0 0 0;">© 2026 Daydrift Corp. 100 Serene Blvd, Suite 400, San Francisco, CA.</p>
+                    <p style="margin: 0; font-weight: bold; color: #475569;">HR Studio Operations & Internal Communications</p>
+                    <p style="margin: 4px 0 0 0;">This is an automated operational email sent on behalf of HR Studio Inc.</p>
+                    <p style="margin: 2px 0 0 0;">© 2026 HR Studio Inc. 123 Business Ave, Suite 400, San Francisco, CA.</p>
                   </td>
                 </tr>
               </table>
@@ -189,14 +189,14 @@ app.post("/api/email/send", async (req, res) => {
   // 1. Try Custom configured SMTP first
   const transporter = getSMTPTransporter();
   if (transporter) {
-    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "no-reply@daydrift.local";
-    const fromName = process.env.SMTP_FROM_NAME || "Daydrift HR";
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "no-reply@hrstudio.local";
+    const fromName = process.env.SMTP_FROM_NAME || "HR Studio";
     
     try {
       const info = await transporter.sendMail({
         from: `"${fromName}" <${fromEmail}>`,
         to: recipientEmail,
-        subject: subject || `Daydrift HR Campaign: ${campaignType}`,
+        subject: subject || `HR Studio Campaign: ${campaignType}`,
         html: generateEmailHtml(campaignType, employeeName || "Employee", subject, body || ""),
       });
       console.log(`[SMTP Email Sent] ID: ${info.messageId}`);
@@ -222,9 +222,9 @@ app.post("/api/email/send", async (req, res) => {
     const freeTransporter = await getEtherealTransporter();
     if (freeTransporter) {
       const info = await freeTransporter.sendMail({
-        from: '"Daydrift HR Auto-SMTP" <no-reply@daydrift.local>',
+        from: '"HR Studio Auto-SMTP" <no-reply@hrstudio.local>',
         to: recipientEmail,
-        subject: subject || `Daydrift HR Campaign: ${campaignType}`,
+        subject: subject || `HR Studio Campaign: ${campaignType}`,
         html: generateEmailHtml(campaignType, employeeName || "Employee", subject, body || ""),
       });
       
@@ -288,14 +288,14 @@ app.post("/api/ai/draft", async (req, res) => {
 
   if (!client) {
     // Return high-quality fallback simulation when API key is missing
-    const simulatedSubject = `Daydrift Automatic Draft: ${type} for ${employeeName || "Team Member"}`;
+    const simulatedSubject = `HR Studio Automatic Draft: ${type} for ${employeeName || "Team Member"}`;
     let simulatedBody = "";
     if (type === "Offer Letter") {
-      simulatedBody = `Dear ${employeeName || "[Candidate Name]"},\n\nWe are absolutely delighted to offer you the position of ${role || "[Role]"} in our ${department || "[Department]"} department at Daydrift. We were incredibly impressed by your interviews, skills, and values.\n\nKey Terms of the Offer:\n- Position: ${role || "[Role]"}\n- Department: ${department || "[Department]"}\n- Annual Salary: ${extraDetails || "$95,000"}\n- Start Date: Immediately\n\n(Simulated draft. To enable real-time Gemini generation, please configure your GEMINI_API_KEY in the Secrets panel)`;
+      simulatedBody = `Dear ${employeeName || "[Candidate Name]"},\n\nWe are absolutely delighted to offer you the position of ${role || "[Role]"} in our ${department || "[Department]"} department at HR Studio. We were incredibly impressed by your interviews, skills, and values.\n\nKey Terms of the Offer:\n- Position: ${role || "[Role]"}\n- Department: ${department || "[Department]"}\n- Annual Salary: ${extraDetails || "$95,000"}\n- Start Date: Immediately\n\n(Simulated draft. To enable real-time Gemini generation, please configure your GEMINI_API_KEY in the Secrets panel)`;
     } else if (type === "LOR") {
-      simulatedBody = `To Whom It May Concern,\n\nI am writing to express my highest recommendation for ${employeeName || "[Employee]"}. In their capacity as ${role || "[Role]"} in the ${department || "[Department]"} division, they demonstrated outstanding execution, technical superiority, and an excellent collaborative mindset.\n\nThey consistently delivered enterprise-grade work, and I have no doubt they will be an invaluable asset to any team they join.\n\nSincerely,\nHR Director, Daydrift\n\n(Simulated draft. Please configure GEMINI_API_KEY in Secrets)`;
+      simulatedBody = `To Whom It May Concern,\n\nI am writing to express my highest recommendation for ${employeeName || "[Employee]"}. In their capacity as ${role || "[Role]"} in the ${department || "[Department]"} division, they demonstrated outstanding execution, technical superiority, and an excellent collaborative mindset.\n\nThey consistently delivered enterprise-grade work, and I have no doubt they will be an invaluable asset to any team they join.\n\nSincerely,\nHR Director, HR Studio\n\n(Simulated draft. Please configure GEMINI_API_KEY in Secrets)`;
     } else {
-      simulatedBody = `Dear ${employeeName || "[Employee Name]"},\n\nThis is a custom communications draft prepared for your reference regarding ${type}.\n\nContext details: ${extraDetails || "Company updates and policy reference."}\n\nWarm regards,\nDaydrift HR Operations\n\n(Simulated draft. Please configure GEMINI_API_KEY in Secrets)`;
+      simulatedBody = `Dear ${employeeName || "[Employee Name]"},\n\nThis is a custom communications draft prepared for your reference regarding ${type}.\n\nContext details: ${extraDetails || "Company updates and policy reference."}\n\nWarm regards,\nHR Studio Operations\n\n(Simulated draft. Please configure GEMINI_API_KEY in Secrets)`;
     }
     return res.json({ subject: simulatedSubject, body: simulatedBody, isSimulated: true });
   }
@@ -389,7 +389,7 @@ app.post("/api/ai/chat", async (req, res) => {
   const client = getGeminiClient();
 
   if (!client) {
-    let simulatedResponse = `Welcome to the Daydrift HR Assistant! I am trained on your company handbook guidelines.
+    let simulatedResponse = `Welcome to the HR Studio Assistant! I am trained on your company handbook guidelines.
     
     Here is some quick handbook information:
     - Leave Policy: Full-time employees receive 18 days of paid annual leave plus sick leave.
@@ -402,8 +402,8 @@ app.post("/api/ai/chat", async (req, res) => {
   }
 
   try {
-    const systemInstruction = `You are Daydrift's premium SaaS HR Assistant, a knowledgeable, friendly, and expert colleague trained on the Daydrift Employee Handbook.
-    Daydrift Guidelines:
+    const systemInstruction = `You are HR Studio's premium SaaS HR Assistant, a knowledgeable, friendly, and expert colleague trained on the HR Studio Employee Handbook.
+    HR Studio Guidelines:
     1. Paid Leaves: 18 annual paid leaves, 10 casual leaves, maternity is 12 weeks paid.
     2. Working Hours: Flexible, core window is 10 AM to 4 PM. Total target is 40 hours/week.
     3. Asset Policy: Laptops must be returned upon exit. Company covers up to $200 for remote office setups.
@@ -457,7 +457,7 @@ async function start() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Daydrift HRMS Server listening on http://0.0.0.0:${PORT}`);
+    console.log(`HR Studio Server listening on http://0.0.0.0:${PORT}`);
   });
 }
 

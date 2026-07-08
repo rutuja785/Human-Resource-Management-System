@@ -84,10 +84,10 @@ export default function DashboardView({
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm transition-colors duration-200">
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            Hello, {currentUserName || 'Sarah Jenkins'} <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
+            Hello, {currentUserName || 'there'} <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-xs mt-1">
-            Welcome back. Daydrift is fully active. All security protocols and automated campaign schedules are verified online.
+            Welcome back. HR Studio is fully active. All security protocols and automated campaign schedules are verified online.
           </p>
         </div>
 
@@ -193,23 +193,17 @@ export default function DashboardView({
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-pink-50 dark:bg-pink-950/20 border border-pink-100 dark:border-pink-900/20">
-              <Cake className="w-4 h-4 text-pink-600 dark:text-pink-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">Elena Rostova</span>
-                <span className="text-[10px] text-slate-600 dark:text-slate-400 block">Birthday is coming up on July 10th</span>
-                <span className="text-[9px] font-semibold text-pink-700 dark:text-pink-400 bg-pink-100 dark:bg-pink-950/30 px-1.5 py-0.5 rounded border border-pink-200 dark:border-pink-900/30 inline-block mt-2">Personalized Email Scheduled</span>
+            {employees.length === 0 ? (
+              <div className="text-center py-8 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                <Cake className="w-6 h-6 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                <span className="text-xs text-slate-500 dark:text-slate-400 block">No upcoming celebrations yet</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-1">Add employees to see birthdays and work anniversaries here</span>
               </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/20">
-              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{currentUserName || 'Sarah Jenkins'}</span>
-                <span className="text-[10px] text-slate-600 dark:text-slate-400 block">4 Year Work Anniversary on July 12th</span>
-                <span className="text-[9px] font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-950/30 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-900/30 inline-block mt-2">Automated Card Ready</span>
-              </div>
-            </div>
+            ) : (
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                No birthdays or anniversaries scheduled in the next 15 days.
+              </span>
+            )}
           </div>
         </div>
 

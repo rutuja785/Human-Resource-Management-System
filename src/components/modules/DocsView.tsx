@@ -50,7 +50,7 @@ Subject: Offer of Employment for the Position of ${employee.role}
 
 Dear ${employee.name},
 
-We are pleased to offer you employment with Daydrift Technologies as a ${employee.role} in the ${employee.department} department. We were highly impressed by your credentials and look forward to having you join our team.
+We are pleased to offer you employment with HR Studio Inc. as a ${employee.role} in the ${employee.department} department. We were highly impressed by your credentials and look forward to having you join our team.
 
 Here are the key details of your employment offer:
 
@@ -61,7 +61,7 @@ Here are the key details of your employment offer:
 - Target Start Date: ${employee.hireDate}
 - Employment Status: Full-time
 
-As a member of the Daydrift team, you will also be eligible for our comprehensive benefits package, including health insurance, paid time off, and standard performance bonuses as defined by company policy.
+As a member of the HR Studio team, you will also be eligible for our comprehensive benefits package, including health insurance, paid time off, and standard performance bonuses as defined by company policy.
 ${extra ? `\nSpecial Terms & Context:\n${extra}\n` : ''}
 Please review this offer and confirm your acceptance by signing and returning a copy of this letter on or before your proposed start date.
 
@@ -70,7 +70,7 @@ Should you have any questions, feel free to contact our Human Resources departme
 Sincerely,
 
 HR Team
-Daydrift Technologies`;
+HR Studio Inc.`;
       break;
 
     case 'Appointment Letter':
@@ -86,11 +86,11 @@ Subject: Letter of Appointment
 
 Dear ${employee.name},
 
-Following your acceptance of our offer, we are delighted to formally appoint you as a ${employee.role} in the ${employee.department} department at Daydrift Technologies, effective from your joining date of ${employee.hireDate}.
+Following your acceptance of our offer, we are delighted to formally appoint you as a ${employee.role} in the ${employee.department} department at HR Studio Inc., effective from your joining date of ${employee.hireDate}.
 
 Terms and Conditions of Appointment:
 
-1. Place of Work: Your initial place of work will be the Daydrift Headquarters. You may be requested to work remotely or travel based on business requirements.
+1. Place of Work: Your initial place of work will be the HR Studio Headquarters. You may be requested to work remotely or travel based on business requirements.
 2. Duties and Responsibilities: You will perform the duties assigned to you by your supervisor to the best of your skills and abilities.
 3. Salary and Compensation: Your annual basic compensation is set at $${(employee.salary.basic * 12).toLocaleString()} with standard HRA and allowances bringing your total package to $${annualSalary.toLocaleString()} per annum, subject to standard tax deductions.
 4. Probationary Period: You will be on probation for a period of 3 months. Upon successful completion of this period, your employment will be confirmed in writing.
@@ -98,12 +98,12 @@ Terms and Conditions of Appointment:
 ${extra ? `\nAdditional Appointment Terms:\n${extra}\n` : ''}
 Please sign the duplicate copy of this letter as a token of your acceptance of the terms and conditions outlined above.
 
-We welcome you to Daydrift Technologies and wish you a successful career ahead.
+We welcome you to HR Studio Inc. and wish you a successful career ahead.
 
 Sincerely,
 
 Director of Human Resources
-Daydrift Technologies`;
+HR Studio Inc.`;
       break;
 
     case 'LOR':
@@ -112,9 +112,9 @@ Daydrift Technologies`;
 
 To Whom It May Concern,
 
-It is my distinct pleasure to write this Letter of Recommendation for ${employee.name}, who has served as a ${employee.role} in the ${employee.department} department at Daydrift Technologies since ${employee.hireDate}.
+It is my distinct pleasure to write this Letter of Recommendation for ${employee.name}, who has served as a ${employee.role} in the ${employee.department} department at HR Studio Inc. since ${employee.hireDate}.
 
-During their tenure at Daydrift, ${employee.name} has consistently demonstrated exceptional dedication, high technical competence, and a collaborative team spirit. They have been instrumental in executing key deliverables and optimizing internal operations within our ${employee.department} division.
+During their tenure at HR Studio, ${employee.name} has consistently demonstrated exceptional dedication, high technical competence, and a collaborative team spirit. They have been instrumental in executing key deliverables and optimizing internal operations within our ${employee.department} division.
 
 Key Attributes and Contributions:
 - Professional Competence: Demonstrated a deep understanding of ${employee.role} duties, consistently exceeding performance targets.
@@ -128,7 +128,7 @@ Please feel free to contact my office if you require any further information.
 Sincerely,
 
 Managing Director
-Daydrift Technologies`;
+HR Studio Inc.`;
       break;
 
     case 'Experience Letter':
@@ -137,21 +137,21 @@ Daydrift Technologies`;
 
 To Whom It May Concern,
 
-This is to certify that ${employee.name} was employed with Daydrift Technologies as a ${employee.role} in the ${employee.department} department.
+This is to certify that ${employee.name} was employed with HR Studio Inc. as a ${employee.role} in the ${employee.department} department.
 
 Employment History:
 - Date of Joining: ${employee.hireDate}
 - Tenure Status: Full-time (Active)
 - Role & Designation: ${employee.role}
 
-During their time with Daydrift Technologies, ${employee.name} demonstrated deep professionalism, exemplary work ethic, and made significant contributions to our team. Their behavior and conduct were consistently excellent, and they maintained strong working relationships with peers and management alike.
+During their time with HR Studio Inc., ${employee.name} demonstrated deep professionalism, exemplary work ethic, and made significant contributions to our team. Their behavior and conduct were consistently excellent, and they maintained strong working relationships with peers and management alike.
 ${extra ? `\nKey Achievements & Professional Scope:\n${extra}\n` : ''}
 We thank ${employee.name} for their dedicated service and wish them the very best in all their future professional endeavors.
 
 Sincerely,
 
 HR Operations Manager
-Daydrift Technologies`;
+HR Studio Inc.`;
       break;
   }
 

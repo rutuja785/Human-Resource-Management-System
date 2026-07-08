@@ -45,7 +45,7 @@ export default function PerformanceView({
     onAddAppraisal({
       employeeId,
       employeeName: emp.name,
-      reviewerName: currentUserName || 'Sarah Jenkins', // Simulated reviewer
+      reviewerName: currentUserName || 'HR Admin',
       period,
       goalsSet,
       selfRating,
@@ -152,22 +152,38 @@ export default function PerformanceView({
           </div>
 
           <div className="space-y-4">
-            {[
-              { label: "Technical Execution", rating: "4.8 / 5.0", pct: "96%" },
-              { label: "Architectural Superiority", rating: "4.5 / 5.0", pct: "90%" },
-              { label: "Collaborative Mindset", rating: "4.6 / 5.0", pct: "92%" },
-              { label: "Product Stewardship", rating: "4.2 / 5.0", pct: "84%" }
-            ].map((comp, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-600 dark:text-slate-300 font-semibold">{comp.label}</span>
-                  <span className="text-slate-400 font-mono text-[10px]">{comp.rating}</span>
-                </div>
-                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800/40">
-                  <div className="bg-gradient-to-r from-purple-600 to-indigo-500 h-full rounded-full" style={{ width: comp.pct }} />
-                </div>
+            {appraisals.length === 0 ? (
+              <div className="text-center py-6 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                <TrendingUp className="w-5 h-5 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                <span className="text-xs text-slate-500 dark:text-slate-400 block">No appraisal data yet</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-1">Conduct a review to see average ratings here</span>
               </div>
-            ))}
+            ) : (
+              (() => {
+                const avgSelf = appraisals.reduce((acc, a) => acc + a.selfRating, 0) / appraisals.length;
+                const avgManager = appraisals.reduce((acc, a) => acc + a.managerRating, 0) / appraisals.length;
+                const approvedCount = appraisals.filter(a => a.status === 'Approved').length;
+                const rows = [
+                  { label: "Average Self Rating", value: avgSelf },
+                  { label: "Average Manager Rating", value: avgManager },
+                  { label: "Approved Reviews", value: (approvedCount / appraisals.length) * 5 , display: `${approvedCount}/${appraisals.length}` }
+                ];
+                return rows.map((comp, idx) => {
+                  const pct = `${Math.min(100, (comp.value / 5) * 100)}%`;
+                  return (
+                    <div key={idx} className="space-y-1.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-600 dark:text-slate-300 font-semibold">{comp.label}</span>
+                        <span className="text-slate-400 font-mono text-[10px]">{comp.display || `${comp.value.toFixed(1)} / 5.0`}</span>
+                      </div>
+                      <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800/40">
+                        <div className="bg-gradient-to-r from-purple-600 to-indigo-500 h-full rounded-full" style={{ width: pct }} />
+                      </div>
+                    </div>
+                  );
+                });
+              })()
+            )}
           </div>
         </div>
 

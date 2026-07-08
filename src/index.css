@@ -8,3 +8,63 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Force background colors, gradients, and images to print in Chrome, Safari, Firefox, Edge */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Completely hide navigation, sidebar, headers, and designer settings during print */
+  aside, 
+  header, 
+  .print\:hidden,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+
+  /* Clean up outer layouts for print viewport */
+  html, body, main, #root {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Center the ID Card perfectly on the print page and slightly scale it for legibility */
+  #id-card-print-area {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) scale(1.4) !important;
+    transform-origin: center !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* 3D Card Flip utilities */
+.perspective {
+  perspective: 1000px;
+}
+
+.transform-style {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+
+

@@ -49,8 +49,8 @@ export default function EmailHubView({
   // Helper to dynamically get sender name
   const getSenderForCampaign = (type: string) => {
     switch(type) {
-      case 'Payslip': return 'Daydrift Payroll';
-      case 'Work Anniversary': return 'Daydrift Leadership';
+      case 'Payslip': return 'HR Studio Payroll';
+      case 'Work Anniversary': return 'HR Studio Leadership';
       case 'Birthday': return 'HR Operations';
       default: return 'HR Communications';
     }
@@ -66,13 +66,13 @@ export default function EmailHubView({
 
     if (campaignType === 'Birthday') {
       subject = `Happy Birthday, ${emp.name}! 🎂`;
-      body = `Hi ${emp.name},\n\nThe entire team at Daydrift wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!\n\nWarm regards,\nHR Operations`;
+      body = `Hi ${emp.name},\n\nThe entire team at HR Studio wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!\n\nWarm regards,\nHR Operations`;
     } else if (campaignType === 'Work Anniversary') {
       subject = `Happy Work Anniversary, ${emp.name}! 🌟`;
-      body = `Hi ${emp.name},\n\nCongratulations on reaching another career milestone with us! We are incredibly grateful for your continuous hard work and dedication. Here's to many more years of shared success!\n\nBest wishes,\nDaydrift Leadership`;
+      body = `Hi ${emp.name},\n\nCongratulations on reaching another career milestone with us! We are incredibly grateful for your continuous hard work and dedication. Here's to many more years of shared success!\n\nBest wishes,\nHR Studio Leadership`;
     } else if (campaignType === 'Payslip') {
       subject = `Payslip June 2026 Released - ${emp.name}`;
-      body = `Hi ${emp.name},\n\nYour payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure Daydrift Portal.\n\nBest regards,\nPayroll Team`;
+      body = `Hi ${emp.name},\n\nYour payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure HR Studio Portal.\n\nBest regards,\nPayroll Team`;
     }
 
     return { subject, body, emp };
@@ -87,11 +87,11 @@ export default function EmailHubView({
       const code = `BDAY-2026-${emp.name.substring(0,3).toUpperCase()}`;
       finalBody = `Dear ${emp.name},
 
-The entire team at Daydrift wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!
+The entire team at HR Studio wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!
 
 ----------------------------------------
 🎁 BIRTHDAY PERK ACTIVATED!
-Enjoy a complimentary Starbucks voucher on Daydrift.
+Enjoy a complimentary Starbucks voucher on HR Studio.
 Code: ${code}
 ----------------------------------------
 
@@ -109,7 +109,7 @@ We appreciate your commitment and loyalty. Your custom performance reward is unl
 ----------------------------------------
 
 Best wishes,
-Daydrift Leadership`;
+HR Studio Leadership`;
     } else if (campaignType === 'Payslip') {
       finalSubject = `Payslip Released: June 2026 - ${emp.name}`;
       const basic = emp.salary.basic;
@@ -120,7 +120,7 @@ Daydrift Leadership`;
 
       finalBody = `Dear ${emp.name},
 
-Your payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure Daydrift Portal.
+Your payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure HR Studio Portal.
 
 ----------------------------------------
  June 2026 Payslip Summary
@@ -215,7 +215,7 @@ Payroll Team`;
     emp: Employee
   ) => {
     let headerColor = "#8b5cf6"; // Purple-500
-    let bannerText = "Daydrift HR Operations & Internal Communications";
+    let bannerText = "HR Studio Operations & Internal Communications";
     let titleText = "HR Notification";
     let accentBlock = "";
 
@@ -224,11 +224,11 @@ Payroll Team`;
       : 12800;
 
     const body = type === 'Birthday' 
-      ? `Dear ${emp.name},\n\nThe entire team at Daydrift wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!`
+      ? `Dear ${emp.name},\n\nThe entire team at HR Studio wishes you an incredible birthday! Thank you for bringing your talent and positive energy to work every day. Have a fantastic day!`
       : type === 'Work Anniversary'
       ? `Dear ${emp.name},\n\nCongratulations on reaching another career milestone with us! We are incredibly grateful for your continuous hard work and dedication. Here's to many more years of shared success!`
       : type === 'Payslip'
-      ? `Dear ${emp.name},\n\nYour payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure Daydrift Portal.`
+      ? `Dear ${emp.name},\n\nYour payslip for June 2026 has been successfully generated and compiled. You can review and print it inside your secure HR Studio Portal.`
       : customBody;
 
     const subject = type === 'Birthday' 
@@ -242,7 +242,7 @@ Payroll Team`;
     if (type === "Birthday") {
       headerColor = "#ec4899"; // Pink-500
       titleText = "Happy Birthday! 🎂";
-      bannerText = "Daydrift Celebrates You";
+      bannerText = "HR Studio Celebrates You";
       accentBlock = `
         <div style="margin-top: 20px; padding: 18px; background-color: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -250,7 +250,7 @@ Payroll Team`;
               <td width="35" valign="top" style="font-size: 24px; padding-right: 12px; line-height: 1;">🎁</td>
               <td valign="top">
                 <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: bold; color: #9d174d;">Birthday Perk Activated!</p>
-                <p style="margin: 3px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: #be185d; line-height: 1.4;">Enjoy a complimentary Starbucks voucher on Daydrift.</p>
+                <p style="margin: 3px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: #be185d; line-height: 1.4;">Enjoy a complimentary Starbucks voucher on HR Studio.</p>
                 <span style="display: inline-block; margin-top: 8px; padding: 4px 8px; font-family: monospace; font-size: 11px; font-weight: bold; color: #9d174d; background-color: #fce7f3; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Code: BDAY-2026-${emp.name.substring(0, 3).toUpperCase()}</span>
               </td>
             </tr>
@@ -260,7 +260,7 @@ Payroll Team`;
     } else if (type === "Work Anniversary") {
       headerColor = "#6366f1"; // Indigo-500
       titleText = "Milestone Moment! 🌟";
-      bannerText = "Daydrift Career Milestone";
+      bannerText = "HR Studio Career Milestone";
       accentBlock = `
         <div style="margin-top: 20px; padding: 18px; background-color: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -277,7 +277,7 @@ Payroll Team`;
     } else if (type === "Payslip") {
       headerColor = "#059669"; // Emerald-600
       titleText = "Salary Slip Dispatched 📑";
-      bannerText = "Daydrift Secure Payroll";
+      bannerText = "HR Studio Secure Payroll";
       accentBlock = `
         <div style="margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <div style="background-color: #f1f5f9; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: bold; color: #334155; text-align: left;">
@@ -310,7 +310,7 @@ Payroll Team`;
     } else {
       headerColor = "#475569"; // Slate-600
       titleText = subject || "Team Announcement";
-      bannerText = "Daydrift Team Memorandum";
+      bannerText = "HR Studio Team Memorandum";
     }
 
     return `
@@ -328,7 +328,7 @@ Payroll Team`;
               <p style="margin: 0; font-family: sans-serif; font-size: 13px; color: #475569; line-height: 1.6; white-space: pre-line;">${body}</p>
               \${accentBlock}
               <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9; font-family: sans-serif; font-size: 12px; color: #94a3b8; text-align: center;">
-                This secure memorandum is intended solely for employees of Daydrift Inc.
+                This secure memorandum is intended solely for employees of HR Studio Inc.
               </div>
             </td>
           </tr>
@@ -363,7 +363,7 @@ Payroll Team`;
         employeeName: emp.name,
         recipientEmail: emp.email,
         campaignType,
-        subject: getPlainTextTemplateDraft(emp)?.subject || `Daydrift Campaign: \${campaignType}`,
+        subject: getPlainTextTemplateDraft(emp)?.subject || `HR Studio Campaign: \${campaignType}`,
         body: plainText,
         status: 'Sent'
       });
@@ -404,7 +404,7 @@ Payroll Team`;
             <div className="absolute top-0 right-0 p-3 opacity-15">
               <Sparkles className="w-20 h-20 rotate-12" />
             </div>
-            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">Daydrift Celebrates You</p>
+            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">HR Studio Celebrates You</p>
             <h4 className="text-lg font-extrabold tracking-tight mt-1">Happy Birthday! 🎂</h4>
           </div>
         )}
@@ -413,7 +413,7 @@ Payroll Team`;
             <div className="absolute top-0 right-0 p-3 opacity-15">
               <Calendar className="w-20 h-20 rotate-12" />
             </div>
-            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">Daydrift Career Milestone</p>
+            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">HR Studio Career Milestone</p>
             <h4 className="text-lg font-extrabold tracking-tight mt-1">Milestone Moment! 🌟</h4>
           </div>
         )}
@@ -422,7 +422,7 @@ Payroll Team`;
             <div className="absolute top-0 right-0 p-3 opacity-15">
               <CreditCard className="w-20 h-20 rotate-12" />
             </div>
-            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">Daydrift Secure Payroll</p>
+            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">HR Studio Secure Payroll</p>
             <h4 className="text-lg font-extrabold tracking-tight mt-1">Salary Slip Dispatched 📑</h4>
           </div>
         )}
@@ -431,7 +431,7 @@ Payroll Team`;
             <div className="absolute top-0 right-0 p-3 opacity-15">
               <Mail className="w-20 h-20 rotate-12" />
             </div>
-            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">Daydrift Team Memorandum</p>
+            <p className="text-[9px] uppercase tracking-widest font-mono font-bold opacity-90">HR Studio Team Memorandum</p>
             <h4 className="text-md font-extrabold tracking-tight mt-1 truncate">{subject || 'Notice Title'}</h4>
           </div>
         )}
@@ -453,7 +453,7 @@ Payroll Team`;
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-purple-900 dark:text-purple-300">Birthday Perk Activated!</p>
-                <p className="text-[10px] text-purple-700 dark:text-purple-400">Enjoy a complimentary Starbucks voucher on Daydrift.</p>
+                <p className="text-[10px] text-purple-700 dark:text-purple-400">Enjoy a complimentary Starbucks voucher on HR Studio.</p>
                 <p className="text-[9px] font-mono font-bold text-purple-900 dark:text-purple-300 mt-1 uppercase tracking-wider bg-purple-100/50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded inline-block">Code: BDAY-2026-{employeeName.substring(0,3).toUpperCase()}</p>
               </div>
             </div>
@@ -511,7 +511,7 @@ Payroll Team`;
             )}
             {type === 'Work Anniversary' && (
               <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-[11px] font-bold shadow-md shadow-indigo-500/10 hover:bg-indigo-500 transition-all cursor-pointer">
-                Say Thanks on Daydrift 🏆
+                Say Thanks on HR Studio 🏆
               </button>
             )}
             {type === 'Payslip' && (
@@ -529,9 +529,9 @@ Payroll Team`;
 
         {/* Email Footer */}
         <div className="bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-5 py-3 text-[9px] text-slate-500 text-center space-y-0.5">
-          <p className="font-bold text-slate-700 dark:text-slate-400">Daydrift HR Operations & Internal Communications</p>
+          <p className="font-bold text-slate-700 dark:text-slate-400">HR Studio Operations & Internal Communications</p>
           <p>This is an automated transactional notification sent directly to your secure staff record.</p>
-          <p>© 2026 Daydrift Corp. 100 Serene Blvd, Suite 400, San Francisco, CA.</p>
+          <p>© 2026 HR Studio Inc. 123 Business Ave, Suite 400, San Francisco, CA.</p>
         </div>
       </div>
     );

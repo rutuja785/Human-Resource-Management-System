@@ -29,7 +29,7 @@ export default function LandingPage({ onEnterApp, theme, onToggleTheme }: Landin
   const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
 
   const workflowSteps = [
-    { title: "Candidate Applies", desc: "Resume automatically parsed and analyzed by Daydrift AI." },
+    { title: "Candidate Applies", desc: "Resume automatically parsed and analyzed by HR Studio AI." },
     { title: "Automated Offer", desc: "Offer letter generated instantly with predefined salary bands." },
     { title: "Digital Onboarding", desc: "ID card and contract generated; onboarding email scheduled." },
     { title: "Asset Provision", desc: "Company laptop and equipment assigned automatically in inventory." }
@@ -60,7 +60,7 @@ export default function LandingPage({ onEnterApp, theme, onToggleTheme }: Landin
             >
               <Layers className="w-4.5 h-4.5 text-white" />
             </motion.div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Daydrift</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">HR Studio</span>
             <span className="px-2 py-0.5 text-[10px] bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full font-mono border border-indigo-100 dark:border-indigo-900/30">v2.1</span>
           </div>
           
@@ -237,7 +237,7 @@ export default function LandingPage({ onEnterApp, theme, onToggleTheme }: Landin
           <div className="text-center mb-12 sm:mb-16">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Comprehensive Modules</span>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mt-2">All major HR operations, unified.</h2>
-            <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm mt-3 max-w-xl mx-auto font-medium">Daydrift integrates the full spectrum of modern HR tools into a single workflow-driven framework. Skip tab-switching and fragmented folders.</p>
+            <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm mt-3 max-w-xl mx-auto font-medium">HR Studio integrates the full spectrum of modern HR tools into a single workflow-driven framework. Skip tab-switching and fragmented folders.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -285,7 +285,7 @@ export default function LandingPage({ onEnterApp, theme, onToggleTheme }: Landin
               <span className="text-[10px] font-mono text-indigo-700 dark:text-indigo-400 uppercase tracking-widest font-bold">Automation Engine</span>
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-2">Route repetitive tasks through smart workflows.</h3>
               <p className="text-slate-700 dark:text-slate-300 text-xs mt-3 leading-relaxed font-medium">
-                Say goodbye to chasing email threads and physical signatures. Choose triggers, set target approval policies, and let Daydrift coordinate the execution background logs autonomously.
+                Say goodbye to chasing email threads and physical signatures. Choose triggers, set target approval policies, and let HR Studio coordinate the execution background logs autonomously.
               </p>
               <div className="mt-6 space-y-2">
                 {workflowSteps.map((step, idx) => (
@@ -310,7 +310,7 @@ export default function LandingPage({ onEnterApp, theme, onToggleTheme }: Landin
               <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-1.5">
                   <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">Daydrift AI Workflow Hub</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">HR Studio AI Workflow Hub</span>
                 </div>
                 <span className="font-mono text-[9px] text-slate-600 dark:text-slate-400 uppercase font-bold">Step {activeWorkflowStep + 1} of 4</span>
               </div>

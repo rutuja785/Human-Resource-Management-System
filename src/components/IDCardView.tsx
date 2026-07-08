@@ -140,7 +140,7 @@ export default function IDCardView({ employees }: IDCardViewProps) {
                     <div className="flex items-center justify-between text-white">
                       <div className="flex items-center gap-1">
                         <Layers className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-black tracking-widest">DAYDRIFT</span>
+                        <span className="text-[10px] font-black tracking-widest">HR STUDIO</span>
                       </div>
                       <ShieldCheck className="w-4 h-4 text-white/80" />
                     </div>
@@ -200,7 +200,7 @@ export default function IDCardView({ employees }: IDCardViewProps) {
                     </div>
                     
                     <ul className="text-[7px] text-slate-500 space-y-1 leading-normal list-disc pl-3 font-mono">
-                      <li>This credential represents official identity authorization for Daydrift physical/digital secure portals.</li>
+                      <li>This credential represents official identity authorization for HR Studio physical/digital secure portals.</li>
                       <li>Card is non-transferable. Loss must be reported instantly to HR Operations.</li>
                       <li>Subject to regular biometric logs and audit scans.</li>
                     </ul>
@@ -227,7 +227,7 @@ export default function IDCardView({ employees }: IDCardViewProps) {
 
                   {/* Return instruction footer */}
                   <div className="border-t border-slate-900/60 pt-2 text-center text-[7px] text-slate-500 font-mono">
-                    If found, return to Daydrift Inc, 100 Pine Street, San Francisco, CA.
+                    If found, return to HR Studio Inc, 123 Business Ave, San Francisco, CA.
                   </div>
 
                 </div>
