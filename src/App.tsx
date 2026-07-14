@@ -390,9 +390,9 @@ export default function App() {
                 <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                   Active Workforce ({filteredEmployees.length} of {employees.length})
                 </span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                {/*<span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
                   💡 Tip: Hover over cards to access digital ID badge print tools & custom contract drafting.
-                </span>
+                </span>*/}
               </div>
 
               {/* Dynamic responsive grid */}

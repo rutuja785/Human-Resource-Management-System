@@ -368,10 +368,7 @@ export default function DocumentGenerator({
                   {/* Description Input for Customization (The Gemini Instruction Prompt) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                      <span>Custom Description / AI Modification Instructions</span>
-                      <span className="text-[10px] text-indigo-500 font-semibold flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> Powered by Gemini
-                      </span>
+                      <span>Custom Description</span>
                     </label>
                     <textarea
                       value={customPrompt}
@@ -405,27 +402,10 @@ export default function DocumentGenerator({
                       setDocumentContent(bindMockPlaceholders(selectedTemplate.placeholderText, targetEmployee));
                       setActiveTab("editor");
                     }}
-                    className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition border border-slate-200 bg-white shrink-0 cursor-pointer"
+                    className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
                   >
-                    Use Template Default (No AI)
-                  </button>
-                  <button
-                    id="btn-trigger-ai-doc-gen"
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                    className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        AI Customizing Document...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4" />
-                        Generate Custom Document with Gemini AI
-                      </>
-                    )}
+                    <FileText className="w-4 h-4" />
+                    Use This Template
                   </button>
                 </div>
               </div>
