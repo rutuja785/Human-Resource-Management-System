@@ -1,428 +1,730 @@
-import { useState, useEffect } from "react";
-import { Employee } from "./types";
-import { INITIAL_EMPLOYEES } from "./data/templates";
-import { isBirthdayToday } from "./utils";
-import EmployeeCard from "./components/EmployeeCard";
-import CSVImporter from "./components/CSVImporter";
-import AddEmployeeForm from "./components/AddEmployeeForm";
-import EmailDrafterModal from "./components/EmailDrafterModal";
-import IDCardGenerator from "./components/IDCardGenerator";
-import DocumentGenerator from "./components/DocumentGenerator";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
+  Layers, 
+  BarChart2, 
   Users, 
-  Upload, 
-  UserPlus, 
-  FileText, 
+  Calendar, 
   CreditCard, 
-  Cake, 
-  Search, 
-  Filter, 
+  FolderLock, 
+  Sparkles, 
+  Briefcase, 
+  Award, 
+  Laptop, 
+  Network, 
   Mail, 
-  Calendar,
-  Sparkles,
-  Info,
+  Bot, 
+  Search, 
+  Bell, 
+  X, 
+  LogOut,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Sun,
   Moon
-} from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+} from 'lucide-react';
 
-// Mock date to July 13th, 2026 to align with system metadata
-const METADATA_DATE = "2026-07-13";
+import LandingPage from './components/LandingPage';
+import DashboardView from './components/modules/DashboardView';
+import EmployeesView from './components/modules/EmployeesView';
+import LeavesView from './components/modules/LeavesView';
+import PayrollView from './components/modules/PayrollView';
+import DocsView from './components/modules/DocsView';
+import IDCardView from './components/IDCardView';
+import RecruitmentView from './components/modules/RecruitmentView';
+import PerformanceView from './components/modules/PerformanceView';
+import AssetsView from './components/modules/AssetsView';
+import OrgChartView from './components/modules/OrgChartView';
+import EmailHubView from './components/modules/EmailHubView';
+
+import { 
+  initialEmployees, 
+  initialLeaveRequests, 
+  initialAttendanceLogs, 
+  initialDocuments, 
+  initialJobOpenings, 
+  initialCandidates, 
+  initialAssets, 
+  initialAppraisals, 
+  initialNotifications, 
+  initialEmailCampaigns 
+} from './data';
+
+import { Employee, LeaveRequest, AttendanceLog, EmployeeDocument, JobOpening, Candidate, Asset, Appraisal, HRNotification, EmailLog } from './types';
+
+type TabType = 
+  | 'dashboard' 
+  | 'employees' 
+  | 'leaves' 
+  | 'payroll' 
+  | 'documents' 
+  | 'idcard' 
+  | 'recruitment' 
+  | 'performance' 
+  | 'assets' 
+  | 'orgchart' 
+  | 'emailhub';
 
 export default function App() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDept, setSelectedDept] = useState("All");
-
-  // Active view states
-  const [activeModal, setActiveModal] = useState<"csv" | "add" | "mail" | "badge" | "doc" | null>(null);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-
-  // Theme states
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const savedTheme = (localStorage.getItem("hr_studio_theme") as "light" | "dark") || "light";
-    setTheme(savedTheme);
-    document.documentElement.classList.toggle("dark", savedTheme === "dark");
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    localStorage.setItem("hr_studio_theme", nextTheme);
-  };
-
-  // Sync to local storage without dummy data
-  useEffect(() => {
-    // Clear legacy storage with dummy data if present
-    localStorage.removeItem("hr_studio_employees");
-    
-    const saved = localStorage.getItem("hr_studio_employees_v2");
-    if (saved) {
-      try {
-        setEmployees(JSON.parse(saved));
-      } catch (e) {
-        setEmployees([]);
-      }
-    } else {
-      setEmployees([]);
-      localStorage.setItem("hr_studio_employees_v2", JSON.stringify([]));
+  const [viewMode, setViewMode] = useState<'landing' | 'app'>('landing');
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('hrstudio-theme');
+      return (saved === 'dark' || saved === 'light') ? saved : 'light';
     }
+    return 'light';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('hrstudio-theme', theme);
+  }, [theme]);
+
+  // Shared application states
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
+
+  // Dynamically derive currentUser from the employee directory. Falls back to a
+  // generic placeholder profile until at least one employee has been added.
+  const currentUser = employees[0] || {
+    id: 'GUEST',
+    name: 'Guest User',
+    email: '',
+    avatar: '',
+    role: 'No Employees Yet',
+    status: 'Active' as const,
+    department: '-',
+    contact: '',
+    hireDate: new Date().toISOString().split('T')[0],
+    salary: { basic: 0, hra: 0, allowances: 0, deductions: 0 }
+  };
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(initialLeaveRequests);
+  const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>(initialAttendanceLogs);
+  const [documents, setDocuments] = useState<EmployeeDocument[]>(initialDocuments);
+  const [jobOpenings, setJobOpenings] = useState<JobOpening[]>(initialJobOpenings);
+  const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates);
+  const [assets, setAssets] = useState<Asset[]>(initialAssets);
+  const [appraisals, setAppraisals] = useState<Appraisal[]>(initialAppraisals);
+  const [notifications, setNotifications] = useState<HRNotification[]>(initialNotifications);
+  
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+
+  const [globalSearch, setGlobalSearch] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Live header clock — updates every minute, formatted as UTC.
+  const formatUtcNow = () => new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  const [currentDateTime, setCurrentDateTime] = useState(formatUtcNow());
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentDateTime(formatUtcNow()), 60000);
+    return () => clearInterval(interval);
   }, []);
 
-  const saveEmployees = (updated: Employee[]) => {
-    setEmployees(updated);
-    localStorage.setItem("hr_studio_employees_v2", JSON.stringify(updated));
+  // Leave Handlers
+  const handleApproveLeave = (id: string) => {
+    setLeaveRequests(prev => prev.map(req => req.id === id ? { ...req, status: 'Approved' } : req));
+    // Automatically add present log if approved
+    const target = leaveRequests.find(r => r.id === id);
+    if (target) {
+      // Send a compliance notification
+      const newNtf: HRNotification = {
+        id: `NTF-${Math.random().toString()}`,
+        title: 'Leave Approved',
+        message: `Leave request for ${target.employeeName} has been approved.`,
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: 'leave',
+        read: false
+      };
+      setNotifications(prev => [newNtf, ...prev]);
+    }
   };
 
-  const handleAddEmployee = (emp: Employee) => {
-    const updated = [emp, ...employees];
-    saveEmployees(updated);
-    setActiveModal(null);
+  const handleRejectLeave = (id: string) => {
+    setLeaveRequests(prev => prev.map(req => req.id === id ? { ...req, status: 'Rejected' } : req));
   };
 
-  const handleCSVImport = (imported: Employee[]) => {
-    const updated = [...imported, ...employees];
-    saveEmployees(updated);
-    setActiveModal(null);
+  const handleApplyLeave = (newReq: Omit<LeaveRequest, 'id'>) => {
+    const id = `LRV-${Math.floor(Math.random() * 900) + 100}`;
+    setLeaveRequests(prev => [{ ...newReq, id }, ...prev]);
+    
+    // Add pending notification
+    const newNtf: HRNotification = {
+      id: `NTF-${Math.random().toString()}`,
+      title: 'New Leave Applied',
+      message: `${newReq.employeeName} submitted a ${newReq.leaveType} request.`,
+      date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      type: 'leave',
+      read: false
+    };
+    setNotifications(prev => [newNtf, ...prev]);
+  };
+
+  // Document Handlers
+  const handleAddDocument = (newDoc: Omit<EmployeeDocument, 'id'>) => {
+    const id = `DOC-${Math.floor(Math.random() * 900) + 100}`;
+    setDocuments(prev => [{ ...newDoc, id }, ...prev]);
+  };
+
+  const handleDeleteDocument = (id: string) => {
+    setDocuments(prev => prev.filter(d => d.id !== id));
+  };
+
+  // Recruitment Handlers
+  const handleAddJobOpening = (newJob: Omit<JobOpening, 'id' | 'applicantsCount'>) => {
+    const id = `JOB-${Math.floor(Math.random() * 900) + 100}`;
+    setJobOpenings(prev => [...prev, { ...newJob, id, applicantsCount: 0 }]);
+  };
+
+  const handleAddCandidate = (newCand: Omit<Candidate, 'id' | 'appliedDate'>) => {
+    const id = `CND-${Math.floor(Math.random() * 900) + 100}`;
+    setCandidates(prev => [...prev, { ...newCand, id, appliedDate: new Date().toISOString().split('T')[0] }]);
+  };
+
+  const handleUpdateCandidateStage = (id: string, stage: Candidate['stage']) => {
+    setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage } : c));
+  };
+
+  const handleEvaluateCandidateAI = (id: string, score: number, evalText: string) => {
+    setCandidates(prev => prev.map(c => c.id === id ? { ...c, aiScore: score, aiEvaluation: evalText } : c));
+  };
+
+  // Performance Handlers
+  const handleAddAppraisal = (newApp: Omit<Appraisal, 'id' | 'date'>) => {
+    const id = `APP-${Math.floor(Math.random() * 900) + 100}`;
+    setAppraisals(prev => [{ ...newApp, id, date: new Date().toISOString().split('T')[0] }, ...prev]);
+  };
+
+  const handleApproveAppraisal = (id: string) => {
+    setAppraisals(prev => prev.map(a => a.id === id ? { ...a, status: 'Approved' } : a));
+  };
+
+  // Asset Handlers
+  const handleAddAsset = (newAsset: Omit<Asset, 'id'>) => {
+    const id = `AST-${Math.floor(Math.random() * 900) + 100}`;
+    setAssets(prev => [...prev, { ...newAsset, id }]);
+  };
+
+  const handleUpdateAssetStatus = (id: string, status: Asset['status'], assignedToId?: string) => {
+    let assignedToName: string | undefined = undefined;
+    if (assignedToId) {
+      const emp = employees.find(e => e.id === assignedToId);
+      if (emp) assignedToName = emp.name;
+    }
+
+    setAssets(prev => prev.map(a => a.id === id ? { 
+      ...a, 
+      status, 
+      assignedToId: assignedToId || undefined, 
+      assignedToName: assignedToName || undefined 
+    } : a));
+  };
+
+  const handleDeleteAsset = (id: string) => {
+    setAssets(prev => prev.filter(a => a.id !== id));
+  };
+
+  // Email Handlers
+  const handleTriggerEmailCampaign = async (campaign: Omit<EmailLog, 'id' | 'timestamp'>) => {
+    const id = `EML-${Math.floor(Math.random() * 900) + 100}`;
+    const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', year: 'numeric', month: '2-digit', day: '2-digit' });
+    
+    // Create local log
+    const tempLog: EmailLog = { ...campaign, id, timestamp, status: 'Sent' };
+    setEmailLogs(prev => [tempLog, ...prev]);
+
+    try {
+      const response = await fetch("/api/email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaignType: campaign.campaignType,
+          employeeName: campaign.employeeName,
+          recipientEmail: campaign.recipientEmail,
+          subject: campaign.subject,
+          body: campaign.body
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setEmailLogs(prev => prev.map(log => log.id === id ? { 
+          ...log, 
+          status: data.mode === 'ethereal' || data.mode === 'smtp' ? 'Sent' : 'Simulated',
+          previewUrl: data.previewUrl
+        } : log));
+        
+        // Add success notification
+        const newNtf: HRNotification = {
+          id: `NTF-${Math.random().toString()}`,
+          title: data.mode === 'ethereal' ? 'Free Auto-SMTP Delivered' : 'Email Campaign Dispatched',
+          message: data.mode === 'ethereal' 
+            ? `Successfully delivered via Ethereal SMTP! Click the 'View Delievered Inbox' link in the outbox to see it.`
+            : `Campaign for ${campaign.employeeName} successfully processed.`,
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'general',
+          read: false
+        };
+        setNotifications(prev => [newNtf, ...prev]);
+      } else {
+        // Simulated or warning from server
+        const targetStatus = data.mode === 'smtp-failed' ? 'SMTP-Failed' : 'Failed';
+        setEmailLogs(prev => prev.map(log => log.id === id ? { ...log, status: targetStatus } : log));
+
+        const newNtf: HRNotification = {
+          id: `NTF-${Math.random().toString()}`,
+          title: 'Delivery Warning',
+          message: data.message || 'The server declined the email request.',
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'general',
+          read: false
+        };
+        setNotifications(prev => [newNtf, ...prev]);
+      }
+    } catch (error: any) {
+      console.error("Email sending exception:", error);
+      setEmailLogs(prev => prev.map(log => log.id === id ? { ...log, status: 'Failed' } : log));
+
+      const newNtf: HRNotification = {
+        id: `NTF-${Math.random().toString()}`,
+        title: 'Connection Refused',
+        message: `Failed to contact mail service: ${error.message}`,
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: 'general',
+        read: false
+      };
+      setNotifications(prev => [newNtf, ...prev]);
+    }
+  };
+
+  const handleClearEmailLogs = () => {
+    setEmailLogs([]);
+  };
+
+  // Employee CRUD handlers
+  const handleAddEmployee = (newEmp: Omit<Employee, 'id'>) => {
+    const id = `EMP-${Math.floor(Math.random() * 900) + 100}`;
+    setEmployees(prev => [{ ...newEmp, id }, ...prev]);
+  };
+
+  const handleEditEmployee = (id: string, updatedFields: Partial<Employee>) => {
+    setEmployees(prev => prev.map(e => e.id === id ? { ...e, ...updatedFields } as Employee : e));
   };
 
   const handleDeleteEmployee = (id: string) => {
-    if (confirm("Are you sure you want to delete this employee record? This cannot be undone.")) {
-      const updated = employees.filter((e) => e.id !== id);
-      saveEmployees(updated);
-    }
+    setEmployees(prev => prev.filter(e => e.id !== id));
   };
 
-  // Find who has a birthday today!
-  const birthdayPeople = employees.filter((emp) => isBirthdayToday(emp.birthDate, METADATA_DATE));
+  const handleMarkNotificationRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
 
-  // Departments list for filtering
-  const departments = ["All", ...Array.from(new Set(employees.map((e) => e.department)))];
+  const handleClearNotifications = () => {
+    setNotifications([]);
+  };
 
-  // Filtered employees list
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesSearch =
-      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.id.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesDept = selectedDept === "All" || emp.department === selectedDept;
+  if (viewMode === 'landing') {
+    return (
+      <LandingPage 
+        onEnterApp={() => setViewMode('app')} 
+        theme={theme}
+        onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      />
+    );
+  }
 
-    return matchesSearch && matchesDept;
-  });
+  // Sidebar Tabs Config
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart2 },
+    { id: 'employees', label: 'Employee Directory', icon: Users },
+    { id: 'leaves', label: 'Leaves & Attendance', icon: Calendar },
+    { id: 'payroll', label: 'Payroll Operations', icon: CreditCard },
+    { id: 'documents', label: 'Secure Documents', icon: FolderLock },
+    { id: 'idcard', label: 'ID Badge Generator', icon: Sparkles },
+    { id: 'recruitment', label: 'Recruitment (ATS)', icon: Briefcase },
+    { id: 'assets', label: 'Hardware Assets', icon: Laptop },
+    { id: 'emailhub', label: 'Email Dispatch Hub', icon: Mail },
+  ] as const;
+
+  const activeNotificationCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased font-sans pb-16 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex relative transition-colors duration-200">
       
-      {/* Dynamic Upper Accent Bar */}
-      <div className="h-1.5 w-full bg-linear-to-r from-sky-500 via-indigo-500 to-emerald-500" />
-
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      {/* Dynamic Left Sidebar */}
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-64'} border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 flex flex-col justify-between h-screen sticky top-0 transition-all duration-300 ease-in-out z-30 overflow-hidden`}>
         
-        {/* Navigation & Header */}
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between py-6 border-b border-slate-200/60 dark:border-slate-800/60 mb-6 gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-md shadow-indigo-100 dark:shadow-none">
-              <Users className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  HR Studio
-                </h1>
-                <span className="text-[10px] font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-900 uppercase tracking-widest">
-                  PRO PORTAL
-                </span>
-              </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Workforce logistics, digital badge prints, and customized HR document drafting.
-              </p>
-            </div>
-          </div>
-
-          {/* Header Controls */}
-          <div className="flex flex-wrap items-center gap-3 self-start md:self-center">
-            {/* Current Date widget */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex items-center gap-3 shadow-xs">
-              <div className="p-2 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl shrink-0">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="block text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider leading-none">
-                  Workspace Date
-                </span>
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap mt-0.5 block">
-                  July 13, 2026
-                </span>
-              </div>
-            </div>
-
-            {/* Theme switch button */}
-            <button
-              onClick={toggleTheme}
-              className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs hover:shadow-md hover:bg-slate-50 dark:hover:bg-slate-800/80 transition text-slate-600 dark:text-slate-300 cursor-pointer flex items-center justify-center shrink-0"
-              title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
-            >
-              {theme === "light" ? <Moon className="w-5 h-5 text-indigo-500" /> : <Sun className="w-5 h-5 text-amber-500" />}
-            </button>
-          </div>
-        </header>
-
-        {/* Birthday Alarm Section - "Get a small notification on their birthdays" */}
-        {birthdayPeople.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 bg-linear-to-r from-amber-500/10 via-rose-500/10 to-indigo-500/10 border border-amber-200/60 dark:border-amber-900/40 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
-          >
-            <div className="flex items-start md:items-center gap-3.5">
-              <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-md shrink-0">
-                <Cake className="w-6 h-6 animate-bounce" />
-              </div>
-              <div>
-                <h4 className="font-extrabold text-slate-900 dark:text-white text-base">
-                  Today is Birthday Celebration! 🎂
-                </h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
-                  The studio has detected that {birthdayPeople.map((b) => b.name).join(" & ")} {birthdayPeople.length === 1 ? "is" : "are"} celebrating a birthday today! Use our smart mail tool to draft a gorgeous template.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                id="btn-trigger-bday-draft-direct"
-                onClick={() => {
-                  setSelectedEmployee(birthdayPeople[0]);
-                  setActiveModal("mail");
-                }}
-                className="px-4 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white rounded-xl transition flex items-center gap-1.5 shadow-sm shadow-amber-200/50 cursor-pointer"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                Draft Birthday Email
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Dashboard Actions Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 mb-8">
+        <div className={`space-y-6 py-5 ${sidebarCollapsed ? 'px-2' : 'px-4'} overflow-y-auto`}>
           
-          {/* Main search and filters */}
-          <div className="md:col-span-6 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/80 shadow-xs flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, role, email..."
-                className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 transition"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <Filter className="text-slate-400 w-4 h-4" />
-              <select
-                value={selectedDept}
-                onChange={(e) => setSelectedDept(e.target.value)}
-                className="py-2 pl-3 pr-8 border border-slate-200 dark:border-slate-800 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 transition font-medium"
+          {/* Brand Identity Header */}
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className="flex items-center gap-2">
+              <motion.div 
+                whileHover={{ rotate: sidebarCollapsed ? 90 : 0, scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-sm shadow-indigo-500/15 cursor-pointer shrink-0"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
               >
-                {departments.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
-                  </option>
-                ))}
-              </select>
+                <Layers className="w-4 h-4 text-white" />
+              </motion.div>
+              {!sidebarCollapsed && (
+                <>
+                  <span className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">HR Studio</span>
+                  <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-mono bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 px-1.5 py-0.5 rounded">v2.1</span>
+                </>
+              )}
             </div>
+
+            {!sidebarCollapsed && (
+              <div className="flex items-center gap-0.5">
+                <button 
+                  onClick={() => setSidebarCollapsed(true)}
+                  className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                  title="Collapse Sidebar"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button 
+                  onClick={() => setViewMode('landing')}
+                  className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                  title="Return to Welcome Screen"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Quick Trigger Buttons */}
-          <div className="md:col-span-6 flex flex-wrap gap-3">
-            <button
-              id="btn-modal-add-employee"
-              onClick={() => setActiveModal("add")}
-              className="flex-1 py-3 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-xs cursor-pointer select-none"
-            >
-              <UserPlus className="w-4 h-4 text-sky-500" />
-              Add Employee
-            </button>
-
-            <button
-              id="btn-modal-import-csv"
-              onClick={() => setActiveModal("csv")}
-              className="flex-1 py-3 px-4 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-xs cursor-pointer select-none"
-            >
-              <Upload className="w-4 h-4 text-indigo-500" />
-              Upload CSV
-            </button>
-
-            <button
-              id="btn-modal-document-studio"
-              onClick={() => {
-                setSelectedEmployee(null);
-                setActiveModal("doc");
-              }}
-              className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-sm shadow-emerald-200 dark:shadow-none cursor-pointer select-none"
-            >
-              <FileText className="w-4 h-4" />
-              Document Studio
-            </button>
+          {/* Quick Find Bar */}
+          <div className={`relative ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+            {sidebarCollapsed ? (
+              <button 
+                onClick={() => {
+                  setSidebarCollapsed(false);
+                  setTimeout(() => {
+                    const el = document.getElementById('sidebar-search-input');
+                    if (el) el.focus();
+                  }, 150);
+                }}
+                className="p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                title="Search Employees"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            ) : (
+              <>
+                <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                <input
+                  id="sidebar-search-input"
+                  type="text"
+                  placeholder="Quick search staff..."
+                  value={globalSearch}
+                  onChange={e => {
+                    setGlobalSearch(e.target.value);
+                    if (activeTab !== 'employees') setActiveTab('employees');
+                  }}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </>
+            )}
           </div>
+
+          {/* Sidebar Nav Items */}
+          <nav className="space-y-1">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setGlobalSearch('');
+                  }}
+                  title={sidebarCollapsed ? tab.label : undefined}
+                  className={`w-full rounded-md text-xs font-semibold flex items-center transition-all ${
+                    sidebarCollapsed 
+                      ? 'justify-center p-2.5 hover:scale-105' 
+                      : 'px-3 py-2 gap-2.5 text-left'
+                  } ${
+                    isActive 
+                      ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 font-bold border-l-2 border-indigo-600 dark:border-indigo-400' + (sidebarCollapsed ? '' : ' pl-2.5')
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-indigo-700 dark:hover:text-indigo-400 border-l-2 border-transparent'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : ''}`} />
+                  {!sidebarCollapsed && <span>{tab.label}</span>}
+                </button>
+              );
+            })}
+          </nav>
 
         </div>
 
-        {/* Modal overlays containers */}
-        <AnimatePresence>
-          {activeModal === "add" && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs p-4 overflow-y-auto">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-8"
-              >
-                <AddEmployeeForm
-                  onAdd={handleAddEmployee}
-                  onCancel={() => setActiveModal(null)}
-                />
-              </motion.div>
+        {/* Dynamic Logged-in Person Profile Footer - Fixed Position */}
+        <div className={`p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center transition-colors duration-200 sticky bottom-0 z-10 shrink-0 ${
+          sidebarCollapsed ? 'justify-center' : 'justify-between'
+        }`}>
+          <div className="flex items-center gap-2 min-w-0">
+            <img 
+              src={currentUser.avatar} 
+              alt={currentUser.name} 
+              className="w-8 h-8 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900 shrink-0"
+              title={sidebarCollapsed ? `${currentUser.name} (${currentUser.role})` : undefined}
+            />
+            {!sidebarCollapsed && (
+              <div className="min-w-0">
+                <span className="text-[11px] font-bold text-slate-900 dark:text-slate-200 block truncate">{currentUser.name}</span>
+                <span className="text-[9px] text-slate-600 dark:text-slate-400 font-mono block truncate">{currentUser.email}</span>
+              </div>
+            )}
+          </div>
+          {!sidebarCollapsed && (
+            <span className="text-[9px] font-bold font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/40 px-1.5 py-0.5 rounded shrink-0">
+              {currentUser.role === 'VP of Engineering' ? 'VP' : currentUser.role.substring(0, 3).toUpperCase()}
+            </span>
+          )}
+        </div>
+
+      </aside>
+
+      {/* Main Panel Content Area */}
+      <main className="flex-1 min-w-0 flex flex-col">
+        
+        {/* Top bar */}
+        <header className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-between items-center sticky top-0 z-40 print:hidden transition-colors duration-200">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+              title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              <ChevronLeft className={`w-4 h-4 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`} />
+            </button>
+            <div className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Enterprise Dashboard</span>
+              <span className="text-xs text-slate-300 dark:text-slate-700">/</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-white uppercase font-mono tracking-wider">{activeTab}</span>
             </div>
-          )}
+          </div>
 
-          {activeModal === "csv" && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs p-4 overflow-y-auto">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-8"
+          <div className="flex items-center gap-4">
+            
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all"
+              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+            >
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+            
+            {/* Notification alert bell */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all relative"
               >
-                <CSVImporter
-                  onImportComplete={handleCSVImport}
-                  onCancel={() => setActiveModal(null)}
-                />
-              </motion.div>
-            </div>
-          )}
-
-          {activeModal === "mail" && selectedEmployee && (
-            <EmailDrafterModal
-              employee={selectedEmployee}
-              onClose={() => {
-                setActiveModal(null);
-                setSelectedEmployee(null);
-              }}
-            />
-          )}
-
-          {activeModal === "badge" && selectedEmployee && (
-            <IDCardGenerator
-              employee={selectedEmployee}
-              onClose={() => {
-                setActiveModal(null);
-                setSelectedEmployee(null);
-              }}
-            />
-          )}
-
-          {activeModal === "doc" && (
-            <DocumentGenerator
-              employees={employees}
-              selectedEmployee={selectedEmployee}
-              onClose={() => {
-                setActiveModal(null);
-                setSelectedEmployee(null);
-              }}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Main Workspace grid */}
-        <main>
-          {filteredEmployees.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-12 text-center shadow-xs">
-              <Users className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-              <h3 className="font-bold text-slate-700 dark:text-slate-200 text-lg">No employee records found</h3>
-              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1 max-w-md mx-auto">
-                {employees.length === 0 
-                  ? "Your workforce is empty. Upload a CSV file or add an employee manually to populate the cards!"
-                  : "We couldn't find any team members matching your search/department filters."}
-              </p>
-              <div className="mt-6 flex justify-center gap-3">
-                {employees.length === 0 ? (
-                  <>
-                    <button
-                      onClick={() => setActiveModal("csv")}
-                      className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-sm cursor-pointer"
-                    >
-                      Upload Sample CSV
-                    </button>
-                    <button
-                      onClick={() => setActiveModal("add")}
-                      className="px-4 py-2 text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition cursor-pointer"
-                    >
-                      Add Manually
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedDept("All");
-                    }}
-                    className="px-4 py-2 text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition cursor-pointer"
-                  >
-                    Clear Search Filters
-                  </button>
+                <Bell className="w-4 h-4" />
+                {activeNotificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
                 )}
-              </div>
-            </div>
-          ) : (
-            <div>
-              {/* Grid Header Info */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 px-1 gap-1 select-none">
-                <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                  Active Workforce ({filteredEmployees.length} of {employees.length})
-                </span>
-                {/*<span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
-                  💡 Tip: Hover over cards to access digital ID badge print tools & custom contract drafting.
-                </span>*/}
-              </div>
+              </button>
 
-              {/* Dynamic responsive grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEmployees.map((emp) => (
-                  <EmployeeCard
-                    key={emp.id}
-                    employee={emp}
-                    currentDate={METADATA_DATE}
-                    onSelectForDoc={(e) => {
-                      setSelectedEmployee(e);
-                      setActiveModal("doc");
-                    }}
-                    onSelectForID={(e) => {
-                      setSelectedEmployee(e);
-                      setActiveModal("badge");
-                    }}
-                    onSelectForMail={(e) => {
-                      setSelectedEmployee(e);
-                      setActiveModal("mail");
-                    }}
-                    onDelete={handleDeleteEmployee}
-                  />
-                ))}
-              </div>
+              {/* Notification overlay dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl p-4 space-y-3 z-50">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">HR Notifications</span>
+                    <button 
+                      onClick={handleClearNotifications}
+                      className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    {notifications.map(n => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => handleMarkNotificationRead(n.id)}
+                        className={`p-2.5 rounded-lg border text-[10px] transition-all cursor-pointer ${
+                          n.read 
+                            ? 'bg-transparent border-transparent text-slate-400 dark:text-slate-500' 
+                            : 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900/30 text-slate-900 dark:text-slate-100'
+                        }`}
+                      >
+                        <div className="flex justify-between font-bold">
+                          <span>{n.title}</span>
+                          <span className="font-mono text-[8px] text-slate-400 dark:text-slate-500">{n.date}</span>
+                        </div>
+                        <p className="mt-0.5 text-slate-500 dark:text-slate-400 font-medium leading-normal">{n.message}</p>
+                      </div>
+                    ))}
+
+                    {notifications.length === 0 && (
+                      <div className="text-center py-6 text-[10px] text-slate-400 dark:text-slate-500 italic">
+                        No active system alerts
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
+
+            <div className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+            
+            {/* Live UTC Clock & Date widget */}
+            <div className="text-right hidden sm:block">
+              <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500">{currentDateTime}</span>
+              <span className="text-[9px] text-indigo-600 dark:text-indigo-400 block font-bold tracking-wider">SECURE LINK</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Dynamic Inner Body */}
+        <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {activeTab === 'dashboard' && (
+            <DashboardView 
+              employees={employees}
+              leaveRequests={leaveRequests}
+              jobOpenings={jobOpenings}
+              assets={assets}
+              currentUserName={currentUser.name}
+              onNavigate={(tab: any) => {
+                if (tab === 'idcards') setActiveTab('idcard');
+                else setActiveTab(tab);
+              }}
+              onQuickCheckIn={() => {
+                const isClockedIn = attendanceLogs.some(log => log.employeeId === currentUser.id && !log.checkOut);
+                if (isClockedIn) {
+                  setAttendanceLogs(prev => prev.map(log => 
+                    log.employeeId === currentUser.id && !log.checkOut 
+                      ? { ...log, checkOut: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } 
+                      : log
+                  ));
+                } else {
+                  const newLog: AttendanceLog = {
+                    id: `ATT-${Math.floor(Math.random() * 900) + 100}`,
+                    employeeId: currentUser.id,
+                    employeeName: currentUser.name,
+                    date: new Date().toISOString().split('T')[0],
+                    checkIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    checkOut: null,
+                    status: 'Present'
+                  };
+                  setAttendanceLogs(prev => [newLog, ...prev]);
+                }
+              }}
+              isCheckedIn={attendanceLogs.some(log => log.employeeId === currentUser.id && !log.checkOut)}
+              checkInTime={attendanceLogs.find(log => log.employeeId === currentUser.id && !log.checkOut)?.checkIn || null}
+            />
           )}
-        </main>
 
-      </div>
+          {activeTab === 'employees' && (
+            <EmployeesView 
+              employees={employees}
+              onAddEmployee={handleAddEmployee}
+              onUpdateEmployee={(emp) => handleEditEmployee(emp.id, emp)}
+              onDeleteEmployee={handleDeleteEmployee}
+            />
+          )}
+
+          {activeTab === 'leaves' && (
+            <LeavesView 
+              leaveRequests={leaveRequests}
+              attendanceLogs={attendanceLogs}
+              employees={employees}
+              onApproveLeave={handleApproveLeave}
+              onRejectLeave={handleRejectLeave}
+              onApplyLeave={handleApplyLeave}
+            />
+          )}
+
+          {activeTab === 'payroll' && (
+            <PayrollView employees={employees} />
+          )}
+
+          {activeTab === 'documents' && (
+            <DocsView 
+              employees={employees}
+              documents={documents}
+              onAddDocument={handleAddDocument}
+              onDeleteDocument={handleDeleteDocument}
+            />
+          )}
+
+          {activeTab === 'idcard' && (
+            <IDCardView employees={employees} />
+          )}
+
+          {activeTab === 'recruitment' && (
+            <RecruitmentView 
+              jobOpenings={jobOpenings}
+              candidates={candidates}
+              onAddJobOpening={handleAddJobOpening}
+              onAddCandidate={handleAddCandidate}
+              onUpdateCandidateStage={handleUpdateCandidateStage}
+              onEvaluateCandidateAI={handleEvaluateCandidateAI}
+            />
+          )}
+
+          {activeTab === 'performance' && (
+            <PerformanceView 
+              appraisals={appraisals}
+              employees={employees}
+              currentUserName={currentUser.name}
+              onAddAppraisal={handleAddAppraisal}
+              onApproveAppraisal={handleApproveAppraisal}
+            />
+          )}
+
+          {activeTab === 'assets' && (
+            <AssetsView 
+              assets={assets}
+              employees={employees}
+              onAddAsset={handleAddAsset}
+              onUpdateAssetStatus={handleUpdateAssetStatus}
+              onDeleteAsset={handleDeleteAsset}
+            />
+          )}
+
+          {activeTab === 'orgchart' && (
+            <OrgChartView employees={employees} />
+          )}
+
+          {activeTab === 'emailhub' && (
+            <EmailHubView 
+              employees={employees}
+              emailLogs={emailLogs}
+              onTriggerEmailCampaign={handleTriggerEmailCampaign}
+              onClearLogs={handleClearEmailLogs}
+            />
+          )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+      </main>
+
     </div>
   );
 }

@@ -1,6 +1,6 @@
 {
   "name": "HR Studio",
-  "description": "An elegant, comprehensive human resource management studio with employee tracking, automated custom document generation using Gemini AI, template editors, printable front-side ID cards, and automated birthday notifications with direct Gmail drafting.",
+  "description": "An AI-powered, modern Human Resource Management System for enterprise-grade employee, payroll, attendance, and document automation.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
